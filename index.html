@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>윤하진</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+            overflow: hidden;
+        }
+
+        .number {
+            font-size: 80vmin;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        .lyrics, .message, .signature {
+            position: absolute;
+            bottom: 20%;
+            width: 100%;
+            text-align: center;
+            font-size: 4vmin;
+            color: white;
+            text-shadow: 2px 2px 0 black, -2px 2px 0 black, 2px -2px 0 black, -2px -2px 0 black;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .message {
+            top: 10%;
+            opacity: 1;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .emphasis {
+            color: red;
+            font-weight: bold;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 0.8); }
+        }
+
+        @keyframes rainbow {
+            0% { color: red; }
+            16% { color: orange; }
+            33% { color: yellow; }
+            50% { color: green; }
+            66% { color: blue; }
+            83% { color: indigo; }
+            100% { color: violet; }
+        }
+
+        @keyframes fancy-effect {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(3deg); }
+            50% { transform: scale(1) rotate(-3deg); }
+            75% { transform: scale(0.9) rotate(1deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .number.rainbow {
+            animation: rainbow 3s linear infinite, fancy-effect 2s ease-in-out infinite;
+        }
+
+        .signature {
+            bottom: 5%;
+            font-size: 3vmin;
+            opacity: 0.5;
+        }
+
+        .song-counter {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 3vmin;
+            color: white;
+            text-shadow: 2px 2px 0 black, -2px 2px 0 black, 2px -2px 0 black, -2px -2px 0 black;
+        }
+    </style>
+</head>
+<body>
+    <div class="number" id="animatedNumber">2</div>
+    <div class="lyrics" id="lyrics"></div>
+    <div class="message" id="message">소리를 키고<br>계속 클릭해보세요!</div>
+    <div class="signature">윤하진</div>
+    <div class="song-counter" id="songCounter">찾은 노래 0/12</div>
+
+    <script>
+        const lyricsMap = {
+            "1.mp3": "매일매일<span class=\"emphasis\"><ruby><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></ruby></span> 예아-",
+            "2.mp3": "<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>번",
+            "3.mp3": "쿠키<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby>-</span>",
+            "4.mp3": "스테<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>",
+            "5.mp3": "(간주) <span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>",
+            "6.mp3": "honestly 우리 사<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>",
+            "7.mp3": "사랑하긴 했었나요 스쳐가는 <span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>ㄴ",
+            "8.mp3": "그냥 정<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>",
+            "9.mp3": "채영<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>가 좋아하는 랜덤 게<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>ㅁ",
+            "10.mp3": "토테모 <span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>",
+            "11.mp3": "오빤 강남 스타<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>ㄹ"
+        };
+
+        const totalSongs = Object.keys(lyricsMap).length + 1;
+        let foundSongs = new Set(); // <ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby>미 찾은 노래를 추적
+
+        let currentAudio = null; // 현재 재생 중인 오디오를 추적
+
+        setTimeout(() => {
+            const messageElement = document.getElementById('message');
+            messageElement.style.opacity = 0;
+        }, 5000);
+
+        document.body.addEventListener('click', () => {
+            const audioFiles = ["1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3", "6.mp3","7.mp3","8.mp3","9.mp3","10.mp3","11.mp3"];
+            const randomFile = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            const lyricsElement = document.getElementById('lyrics');
+            const numberElement = document.getElementById('animatedNumber');
+            const songCounter = document.getElementById('songCounter');
+
+            // 현재 재생 중인 오디오가 있다면 중지
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            // 새로운 오디오 객체 생성 및 재생
+            currentAudio = new Audio(randomFile);
+
+            // <ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby>미 찾은 노래라면 넘어가기
+            if (!foundSongs.has(randomFile)) {
+                foundSongs.add(randomFile);
+            }
+
+            lyricsElement.innerHTML = lyricsMap[randomFile] || "";
+            lyricsElement.style.opacity = 1;
+            numberElement.classList.add('rainbow');
+
+            // "찾은 노래 갯수/전체 노래 갯수" 업데<ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby>트
+            songCounter.innerHTML = `찾은 노래 ${foundSongs.size}/${totalSongs}`;
+
+            currentAudio.addEventListener('ended', () => {
+                lyricsElement.style.opacity = 0;
+                numberElement.classList.remove('rainbow');
+            });
+
+            currentAudio.play();
+        });
+    </script>
+
+</body>
+</html>
