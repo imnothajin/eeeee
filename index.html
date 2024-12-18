@@ -94,7 +94,7 @@
     <div class="lyrics" id="lyrics"></div>
     <div class="message" id="message">소리를 키고<br>계속 클릭해보세요!</div>
     <div class="signature">윤하진</div>
-    <div class="song-counter" id="songCounter">찾은 노래 0/12</div>
+    <div class="song-counter" id="songCounter">찾은 노래 0/11</div>
 
     <script>
         const lyricsMap = {
@@ -111,7 +111,7 @@
             "11.mp3": "오빤 강남 스타<span class=\"emphasis\"><ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby></span>ㄹ"
         };
 
-        const totalSongs = Object.keys(lyricsMap).length + 1;
+        const totalSongs = Object.keys(lyricsMap).length;
         let foundSongs = new Set(); // <ruby>이 <rp>(</rp><rt>2</rt><rp>)</rp></ruby>미 찾은 노래를 추적
 
         let currentAudio = null; // 현재 재생 중인 오디오를 추적
